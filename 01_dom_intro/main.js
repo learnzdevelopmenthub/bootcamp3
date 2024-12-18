@@ -30,4 +30,4 @@ changeBtn.addEventListener('mouseover', () => {
     console.log("Mouse hovered")
 })
 
-// event, event handling, way of event handlings, variable, way to write functions
+// event, event handling, way of event handlings, variable, way to write function
