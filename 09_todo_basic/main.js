@@ -4,21 +4,33 @@
 // user can search tasks by name - completed
 // user can mark a task as complete and undo - completed
 
-let tasks = []
+let tasks = JSON.parse(localStorage.getItem('tasks')) || []
+
 let resultElement = document.querySelector('#result')
+
+renderTasks(tasks)
 
 function renderTasks(array) {
     resultElement.innerHTML = ''
     array.forEach( (item) => {
-        resultElement.innerHTML += `
-                                    <div class=task-wrapper>
-                                        <input onchange="toggleComplete(${item.id})" type="checkbox" ${item.isCompleted ? 'checked' : ''}>
-                                        <h1 class="${ item.isCompleted ? 'completed' : ''}">${item.name}</h1>
-                                        <div >
-                                            <button onclick="deleteTask(${item.id})">Delete</button>
-                                        </div>
-                                    </div>
-                                    `
+        let divElement = document.createElement('div')
+        divElement.className = 'task-wrapper'
+        divElement.innerHTML += `
+                                <input type="checkbox" ${item.isCompleted ? 'checked' : ''}>
+                                <h1 class="${ item.isCompleted ? 'completed' : ''}">${item.name}</h1>
+                                <div >
+                                    <button>Delete</button>
+                                </div>
+                                `
+        divElement.querySelector('input').addEventListener('change', ()=>{
+            toggleComplete(item.id)
+        })
+
+        divElement.querySelector('button').addEventListener('click', ()=>{
+            deleteTask(item.id)
+        })
+
+        resultElement.appendChild(divElement)
     })
 }
 
@@ -26,7 +38,8 @@ function renderTasks(array) {
 document.querySelector('#addBtn').addEventListener('click', ()=>{
     let value = document.querySelector('#taskInput').value
     let task = {id: Date.now(), name: value, isCompleted: false}
-    tasks.push(task)
+    tasks.unshift(task)
+    localStorage.setItem('tasks', JSON.stringify(tasks))
     renderTasks(tasks)
 })
 
@@ -35,6 +48,7 @@ function deleteTask(id) {
     tasks = tasks.filter(item => {
         return item.id != id
     })
+    localStorage.setItem('tasks', JSON.stringify(tasks))
     renderTasks(tasks)
 }
 
@@ -50,5 +64,6 @@ document.querySelector('#searchInput').addEventListener('keyup', event => {
 function toggleComplete(id){
     let obj = tasks.find(item => item.id === id)
     obj.isCompleted = !obj.isCompleted
+    localStorage.setItem('tasks', JSON.stringify(tasks))
     renderTasks(tasks)
 }
